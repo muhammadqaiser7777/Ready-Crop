@@ -1,0 +1,11 @@
+# Ignore environment variables
+.env
+
+# Ignore virtual environment
+venv/
+
+# Ignore __pycache__ from root, controller, middleware, and config directories
+__pycache__/
+controllers/__pycache__/
+middleware/__pycache__/
+config/__pycache__/

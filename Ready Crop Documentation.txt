@@ -1,0 +1,79 @@
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    email TEXT UNIQUE NOT NULL,
+    gender TEXT CHECK (gender IN ('male', 'female', 'other')) NOT NULL,
+    password TEXT CHECK (LENGTH(password) >= 8) NOT NULL,
+    full_name TEXT NOT NULL,
+    profile_pic TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status TEXT CHECK (status IN ('Verified', 'Pending')) DEFAULT 'Pending',
+    otp TEXT,
+    otp_purpose TEXT CHECK (otp_purpose IN ('Verification', 'Password Change')),
+    otp_expiry TIMESTAMP DEFAULT (CURRENT_TIMESTAMP + INTERVAL '3 minutes'),
+    auth_token TEXT
+);
+
+
+Signup Function
+
+http://192.168.199.156:5000/signup
+
+data
+
+{
+    "full_name": "Qaiser Akram",
+    "email": "qaiserakram7777@gmail.com",
+    "password": "ReadyCrop2!@",
+    "gender": "male"
+}
+
+
+response
+
+{
+    "auth_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InFhaXNha3JhbTc3NzdAZ21haWwuY29tIn0.EMjOI1cULxsxAFSsTV_XqDR22qg0hnaRd03p0FLymP4",
+    "email": "qaisakram7777@gmail.com",
+    "full_name": "Qaiser Akram",
+    "message": "User registered successfully",
+    "profile_pic": "./Public/Avatar/other_avatar.webp",
+    "user_id": 6
+}
+
+
+Verification Function
+
+data
+
+{
+    "email": "qaiserakram7777@gmail.com",
+    "auth_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InFhaXNlcmFrcmFtNzc3N0BnbWFpbC5jb20ifQ.cWrhXyshnKa4Wjynkx_qlTthPCVMHskFFPzzddNJD64",
+    "otp": "743649"
+}
+
+response
+
+{
+    "message": "OTP verified successfully, status updated to Verified"
+}
+
+
+Login Function
+
+data
+
+{
+    "email": "qaiserakram7777@gmail.com",
+    "password": "ReadyCrop2!@"
+}
+
+
+response
+
+{
+    "auth_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InFhaXNlcmFrcmFtNzc3N0BnbWFpbC5jb20ifQ.cWrhXyshnKa4Wjynkx_qlTthPCVMHskFFPzzddNJD64",
+    "email": "qaiserakram7777@gmail.com",
+    "full_name": "M. Qaiser",
+    "gender": "male",
+    "profile_pic": "https://avatar.iran.liara.run/public/boy?username=M._Qaiser",
+    "status": "Verified"
+}
