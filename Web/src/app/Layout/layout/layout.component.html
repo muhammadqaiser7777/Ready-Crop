@@ -1,0 +1,133 @@
+    <div class="container">
+    <nav class="navbar">
+        <!-- Left Side: Logo and Title -->
+        <div class="left" (click)="loadComponent('agePredictor')">
+        <div class="logo">
+            <img src="../../../assets/Logos/Ready-Crop-Logo-Transparent (1).ico" alt="Ready Crop Logo" id="logo">
+        </div>
+        <h3 class="title">Ready Crop</h3>
+        </div>
+
+        <!-- Right Side: Dynamic Buttons -->
+        <div class="right">
+        <button class="btn-simple" 
+                [ngClass]="{'btn-simple-selected': selectedComponent === 'guide'}"
+                (click)="loadComponent('guide')">Guide</button>
+
+        <ng-container *ngIf="!loggedIn; else loggedInTemplate">
+            <button class="btn" 
+                    [ngClass]="{'btn-selected': selectedComponent === 'login'}"
+                    (click)="loadComponent('login')">Login</button>
+            <button class="btn" 
+                    [ngClass]="{'btn-selected': selectedComponent === 'signup'}"
+                    (click)="loadComponent('signup')">Sign Up</button>
+        </ng-container>
+
+    <ng-template #loggedInTemplate>
+    <button class="btn-simple" 
+            [ngClass]="{'btn-simple-selected': selectedComponent === 'notifications'}"
+            (click)="loadComponent('notifications')">
+
+        <ng-container *ngIf="newNotifications; else noNewNotifications">
+            <!-- 🔔 SVG with dot / new notification -->
+            <svg xmlns="http://www.w3.org/2000/svg" height="32" width="32" viewBox="0 0 24 24" fill="white">
+        <path d="M12 22c1.1 0 2-.9 2-2h-4a2 2 0 0 0 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4
+                c0-.83-.67-1.5-1.5-1.5S10.5 3.17 10.5 4v.68C7.63 5.36 6 7.92 6 11v5l-1.7 1.7
+                c-.14.14-.3.3-.3.6h16c0-.3-.16-.46-.3-.6L18 16z"/>
+        <circle cx="18" cy="6" r="2" fill="green" stroke="white" stroke-width="1.5"/>
+    </svg>
+
+        </ng-container>
+
+        <ng-template #noNewNotifications>
+        <!-- 🔕 SVG no new notification -->
+                <svg xmlns="http://www.w3.org/2000/svg" height="32px" width="32px" viewBox="0 0 24 24" fill="white">
+                    <path d="M12 22c1.1 0 2-.9 2-2h-4a2 2 0 0 0 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4
+                    c0-.83-.67-1.5-1.5-1.5S10.5 3.17 10.5 4v.68C7.63 5.36 6 7.92 6 11v5l-1.7 1.7
+                    c-.14.14-.3.3-.3.6h16c0-.3-.16-.46-.3-.6L18 16z"/>
+            </svg>
+        </ng-template>
+
+    </button>
+
+
+
+            <button class="btn-simple" #profileButton (click)="toggleProfileDropdown()">
+            <img class="profile-logo" *ngIf="userData['profile_pic']" [src]="userData['profile_pic']" alt="Profile Picture">
+            </button>
+
+                <!-- Profile Dropdown -->
+                <!-- Existing Profile Dropdown for Verified Users -->
+        <div class="profile-dropdown" *ngIf="profileDropdownOpen && userData['status'] === 'Verified'" #profileDropdown>
+            <div class="profile-info">
+            <img class="profile-pic" *ngIf="userData['profile_pic']" [src]="userData['profile_pic']" alt="Profile Picture">
+            <p class="full-name">{{ userData['full_name'] }}</p>
+            </div>
+            <button class="dropdown-btn" (click)="loadComponent('plantRecords')">View My Plants</button>
+            <button class="dropdown-btn" (click)="loadComponent('changePassword')">Change Password</button>
+            <button class="dropdown-btn logout" (click)="logout()">Logout</button>
+        </div>
+        
+    <!-- Pending Verification Dropdown -->
+    <div class="profile-dropdown" *ngIf="profileDropdownOpen && userData['status'] === 'Pending'" #profileDropdown>
+        <div class="pending-verification">
+            <p>Your account verification is <strong>pending</strong>.</p>
+        
+            <button class="verify-popup" (click)="handleVerificationClick()" [disabled]="isLoading">
+                <ng-container *ngIf="!isLoading; else loading">
+                <b>Click here to verify</b>
+                </ng-container>
+                <ng-template #loading>
+                <span class="spinner"></span> Verifying...
+                </ng-template>
+            </button>
+        
+            <button class="dropdown-btn logout" (click)="logout()">Logout</button>
+            </div>
+        </div>
+        
+        <!-- OTP Dialog Popup -->
+        <div class="otp-dialog-wrapper" *ngIf="otpDialogOpen">
+            <div class="otp-dialog">
+            <!-- Close Button -->
+            <button class="close-btn" (click)="closeOtpDialog()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" />
+                </svg>
+            </button>
+        
+            <!-- Loader -->
+            <div *ngIf="isLoading" class="otp-loader">
+                <span class="spinner"></span>
+                <p>Processing...</p>
+            </div>
+        
+            <!-- Error Message -->
+            <div *ngIf="errorMessage && !isLoading" class="error-message">
+                <p>{{ errorMessage }}</p>
+            </div>
+        
+            <!-- OTP Expired Section -->
+            <ng-container *ngIf="otpStatus === 'expired' && !isLoading; else enterOtp">
+                <p>Previous OTP has expired.</p>
+                <button class="otp-buttons" (click)="refreshOtp()">Generate new OTP</button>
+            </ng-container>
+        
+            <!-- OTP Entry Section -->
+            <ng-template #enterOtp>
+                <p>Please enter the OTP sent to your email.</p>
+                <input type="text" [(ngModel)]="enteredOtp" placeholder="Enter OTP">
+                <p *ngIf="otpTimer > 0">Time left: {{ otpTimer }}s</p>
+                <button class="otp-buttons" (click)="submitOtp()">Verify</button>
+            </ng-template>
+        </div>
+        
+
+        </div>
+        
+        </ng-template>
+        </div>
+    </nav>
+
+    <div class="content" #content></div>
+    </div>

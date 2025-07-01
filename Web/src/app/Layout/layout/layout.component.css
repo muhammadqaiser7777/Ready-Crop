@@ -1,0 +1,369 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #2e7d32;
+  color: white;
+  height: 15vh;
+  padding: 12px 24px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease-in-out;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  flex-wrap: wrap;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* Ensures center alignment */
+  margin-top: 15vh;
+  padding: 20px;
+  width: 100%;
+  box-sizing: border-box; /* Ensures padding doesn't break width */
+}
+
+
+/* Left side (logo + title) */
+.left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  animation: fadeIn 0.6s ease-in-out;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.logo {
+  border-radius: 50%;
+  background-color: beige;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease-in-out;
+}
+
+.logo:hover {
+  transform: scale(1.1);
+}
+
+#logo {
+  width: 40px;
+  height: 40px;
+}
+
+.title {
+  font-weight: bold;
+  font-size: 1.4rem; /* Adjust size for responsiveness */
+  white-space: nowrap;
+}
+
+/* Right side (login + signup) */
+.right {
+  display: flex;
+  gap: 12px;
+  animation: slideIn 0.6s ease-in-out;
+}
+
+/* Button styles */
+.btn {
+  padding: 10px 20px;
+  border: 2px solid white;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  background: #1b5e20;
+  color: white;
+  transition: transform 0.2s ease-in-out, background 0.3s, color 0.3s, border 0.3s;
+  white-space: nowrap;
+}
+
+.btn:hover {
+  transform: translateY(-3px);
+}
+
+.btn-selected {
+  background: white !important;
+  color: #1b5e20 !important;
+  border: 2px solid #1b5e20 !important;
+}
+
+/* Ensure buttons maintain similar styling */
+.btn-outline, .btn-filled {
+  background: #1b5e20;
+  color: white;
+  border: 2px solid white;
+}
+
+.btn-outline:hover, .btn-filled:hover {
+  background: white;
+  color: #1b5e20;
+  border: 2px solid #1b5e20;
+}
+
+
+.btn-simple, .btn-simple-selected {
+  background: transparent;
+  color: white;
+  border: none;
+}
+
+.btn-simple-selected {
+  position: relative;
+  background: rgba(144, 238, 144, 0.2); /* Light greenish tint */
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  color: #ffffff; /* Dark green text */
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 0 15px rgba(144, 238, 144, 0.6); /* Green glow effect */
+}
+
+/* Adding a subtle spotlight effect */
+.btn-simple-selected::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 120%;
+  height: 120%;
+  background: radial-gradient(circle, rgba(144, 238, 144, 0.3) 10%, transparent 80%);
+  transform: translate(-50%, -50%);
+  z-index: -1;
+  border-radius: 50%;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.btn-simple-selected:hover {
+  background: rgba(144, 238, 144, 0.4); /* Slightly darker green */
+  box-shadow: 0 0 20px rgba(144, 238, 144, 0.8); /* More intense glow */
+}
+
+.profile-logo{
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid rgb(54, 250, 0);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+
+.profile-dropdown {
+  position: absolute;
+  top: 60px;
+  right: 10px;
+  width: 200px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+  margin-top: 15px;
+}
+
+.profile-info {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.profile-info .profile-pic {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.full-name {
+  font-size: 14px;
+  font-weight: bold;
+  color: #39733a;
+  margin-top: 10%;
+}
+
+.dropdown-btn {
+  background: none;
+  border: none;
+  padding: 10px;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.dropdown-btn:hover {
+  background: #f0f0f0;
+  border-radius: 10px;
+}
+
+.logout {
+  color: red;
+  font-weight: bold;
+}
+
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .navbar {
+    padding: 10px 16px;
+  }
+  .title {
+    font-size: 1.2rem;
+  }
+  .btn {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+  }
+  
+  .logo {
+    width: 35px;
+    height: 35px;
+  }
+
+  .title {
+    font-size: 1rem;
+  }
+
+  .btn {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+}
+
+/* Extra Small Screens (Mobile) */
+@media (max-width: 480px) {
+  .container{
+    width: 90%;
+  }
+  .navbar {
+    height: 10%;
+    flex-wrap: wrap;
+  }
+
+  .right {
+    gap: 6px;
+  }
+
+  .btn {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+
+  .btn-simple, .btn-simple-selected {
+    margin: 1px;
+    padding: 4px 8px;
+    font-size: 14px;
+  }
+
+}
+
+.pending-verification {
+  padding: 1rem;
+  color: #333;
+  text-align: center;
+}
+
+.verify-popup {
+  display: inline-block;
+  margin-top: 0.5rem;
+  color: #247e21;
+  cursor: pointer;
+  text-decoration: none;
+  background-color: transparent;
+  border: none;
+}
+  
+.otp-dialog-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 128, 0, 0.4); /* green blur effect */
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.otp-dialog {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  width: 300px;
+  text-align: center;
+  position: relative;
+}
+
+.otp-dialog .close-btn {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  border: none;
+  background: transparent;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+    .otp-dialog .error-message {
+        color: red;
+        margin-bottom: 15px;
+        font-weight: bold;
+    }
+
+/* OTP Buttons Styles */
+.otp-buttons {
+  background-color: #4CAF50; /* Green background */
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 10px;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+/* Hover Effects */
+.otp-buttons:hover {
+  background-color: #45a049; /* Darker green on hover */
+  transform: scale(1.05); /* Slightly scale up on hover */
+}
+
+/* Focus Styles */
+.otp-buttons:focus {
+  outline: none;
+  box-shadow: 0 0 5px 2px rgba(0, 128, 0, 0.7);
+}
+
+/* Disabled Button Style */
+.otp-buttons:disabled {
+  background-color: #dcdcdc;
+  cursor: not-allowed;
+}

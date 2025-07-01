@@ -1,0 +1,175 @@
+    .plant-records-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f9f9f9;
+    border-radius: 10px;
+    }
+
+    h2 {
+    text-align: center;
+    color: #4caf50;
+    margin-bottom: 20px;
+    }
+
+    .loader {
+    text-align: center;
+    color: #555;
+    font-weight: bold;
+    }
+
+    .plant-list {
+    list-style: none;
+    padding: 0;
+    }
+
+    .plant-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    padding: 10px 15px;
+    transition: box-shadow 0.2s;
+    }
+
+    .plant-card:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .plant-info {
+    display: flex;
+    flex-direction: column;
+    }
+
+    .plant-type {
+    font-weight: bold;
+    font-size: 1.1em;
+    }
+
+    .plant-class,
+    .plant-confidence,
+    .plant-date {
+    font-size: 0.9em;
+    color: #555;
+    }
+
+    .delete-btn {
+    background-color: #e53935;
+    border: none;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    }
+
+    .delete-btn:hover {
+    background-color: #c62828;
+    }
+
+    .no-records {
+    text-align: center;
+    color: #777;
+    font-style: italic;
+    }
+
+    .add-plant-form {
+    background: #eef6f0;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 30px;
+    }
+
+    .add-plant-form h3 {
+    color: #388e3c;
+    margin-bottom: 15px;
+    }
+
+    .form-group {
+    margin-bottom: 10px;
+    }
+
+    label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 4px;
+    }
+
+    select,
+    input[type="number"] {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    }
+
+    .add-btn {
+    background-color: #4caf50;
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    transition: background-color 0.2s;
+    }
+
+    .add-btn:hover {
+    background-color: #388e3c;
+    }
+
+    .delbtn{
+        color: #e53935;
+        border: 1px solid #e53935;
+        background-color: transparent;
+        border-radius: 50%;
+        padding-bottom: 5px;
+    }
+
+
+        .add-plant-toggle {
+    background-color: #4caf50;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    }
+
+    .add-plant-toggle:hover {
+    background-color: #388e3c;
+    }
+
+    .add-plant-dropdown {
+    background: #eef6f0;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    }
+
+    .info-message {
+    font-size: 0.85em;
+    color: #555;
+    margin-bottom: 8px;
+    }
+
+    .add-plant-wrapper {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.closebtn-toggle {
+    color: red;
+    border: none;
+    border: none;
+    background-color: transparent;
+    box-shadow: #c62828 2px 2px 2px;
+    border-radius: 25%;
+}

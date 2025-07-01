@@ -1,0 +1,50 @@
+<div class="age-predictor">
+  <h2 class="title">Smart Harvest</h2>
+  <h2 class="title">Upload <br>&<br> Predict</h2>
+
+  <div class="dropdown-wrapper">
+    <div class="dropdown-container">
+      <label for="plant-select">Select Plant:</label>
+      <select id="plant-select" [(ngModel)]="selectedPlant">
+        <option value="" disabled>Select Plant</option>
+        <option value="green-chilli">Green Chilli</option>
+      </select>
+    </div>
+    <img *ngIf="selectedPlant === 'green-chilli'" src="../../../assets/Logos/green-chilli.png" alt="Green Chilli" class="icon">
+  </div>
+
+  <div class="image-upload" (click)="handleImageUploadClick()" [class.has-image]="!!image">
+    <p *ngIf="!image" class="prompt">
+      <svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" fill="grey" class="bi bi-image-fill" viewBox="0 0 16 16">
+        <path d="M.002 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-12a2 2 0 0 1-2-2zm1 9v1a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062zm5-6.5a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0"/>
+      </svg><br>Click to upload an image
+    </p>
+    <img *ngIf="image" [src]="image" alt="Processed Image" class="processed-image" />
+  </div>
+
+  <div *ngIf="image && !loading" class="button-group">
+    <button (click)="handleTakeNewPicture()">Retake</button>
+    <button (click)="handleSubmit()">Analyze</button>
+  </div>
+
+  <div *ngIf="loading" class="loader-container">
+    <l-helix size="60" speed="2.5" color="#024f09"></l-helix>
+    <p class="status-text">{{ status }}</p>
+  </div>
+
+  <div *ngIf="!loading && status && image" class="result-status">
+    <p>{{ status }}</p>
+  </div>
+
+  <!-- 👇 Detections Display -->
+  <div *ngIf="!loading && detections.length > 0" class="detections-list">
+    <h3>Detected Plants:</h3>
+    <ul>
+      <li *ngFor="let detection of detections">
+        <div class="detection-item">
+          <p>{{ detection.class_name }} - Confidence: {{ detection.confidence | percent:'1.0-2' }}</p>
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>

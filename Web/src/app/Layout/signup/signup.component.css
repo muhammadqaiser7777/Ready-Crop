@@ -1,0 +1,304 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+
+  .logo-center {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+  
+  #logo {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: beige;
+    transition: transform 0.3s ease-in-out;
+  }
+
+  #logo:hover {
+    transform: scale(1.1);
+  }
+
+  .form-title {
+    text-align: center;
+    margin-bottom: 15px;
+  }
+
+  .form {
+    width: 350px;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.5s ease-in-out;
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .form:hover {
+    transform: scale(1.1);
+  }
+  
+  .input-container {
+    margin-bottom: 15px;
+  }
+  
+  .inputForm {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    padding: 8px;
+    border-radius: 5px;
+  }
+  
+  .input {
+    width: 100%;
+    border: none;
+    outline: none;
+  }
+
+  .radio-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+  
+  .radio-group label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    background: #f0f0f0;
+    padding: 8px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .radio-group input {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 2px solid green;
+    border-radius: 50%;
+    outline: none;
+    cursor: pointer;
+    position: relative;
+  }
+  
+  .radio-group input:checked {
+    background-color: green;
+    border: 5px solid white;
+    box-shadow: 0 0 0 2px green;
+  }
+  
+  .radio-group label:hover {
+    background: #d4edda;
+  }
+  
+  
+  .eye-icon {
+    cursor: pointer;
+  }
+  
+  .button-submit {
+    width: 100%;
+    padding: 10px;
+    background: #2ecc71;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .button-submit:hover {
+    background: #27ae60;
+    transform: scale(1.05);
+  }
+
+  .button-submit:disabled {
+    background: gray;
+  }
+  
+
+  .p {
+    text-align: center;
+    font-size: 14px;
+    color: #2c3e50;
+    margin-top: 10px;
+  }
+  
+  .login-link {
+    font-weight: 600;
+    color: #3498db;
+    cursor: pointer;
+    transition: color 0.3s ease-in-out;
+  }
+  
+  .login-link:hover {
+    color: #1d68a7;
+  }
+
+
+  .error-message {
+    color: red;
+    font-size: 12px;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  
+
+  .error-message {
+    color: red;
+    font-size: 14px;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  
+  .loader {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 0.8s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+
+  .otp-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
+    z-index: 1000;
+  }
+  
+  .otp-container .popup-content {
+    background: #fff;
+    padding: 25px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.3s ease-in-out;
+    max-width: 400px;
+    width: 90%;
+  }
+  
+  .otp-container h2 {
+    margin-bottom: 10px;
+    color: #333;
+    font-size: 1.5rem;
+  }
+  
+  .otp-container p {
+    font-size: 0.9rem;
+    color: #555;
+  }
+  
+  .otp-container .input {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    outline: none;
+    margin-top: 10px;
+    transition: border-color 0.3s;
+  }
+  
+  .otp-container .input:focus {
+    border-color: #4CAF50;
+  }
+  
+  .otp-container .error-message {
+    color: red;
+    font-size: 0.9rem;
+    margin-top: 5px;
+    display: block;
+  }
+  
+  .otp-container .button-submit, 
+  .otp-container .button-resend {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+  }
+  
+  .otp-container .button-submit {
+    background: #4CAF50;
+    color: white;
+    margin-top: 15px;
+  }
+  
+  .otp-container .button-submit:hover {
+    background: #45a049;
+  }
+  
+  .otp-container .button-submit:disabled {
+    background: #a5d6a7;
+    cursor: not-allowed;
+  }
+  
+  .otp-container .button-resend {
+    background: #888;
+    color: white;
+    margin-top: 10px;
+  }
+  
+  .otp-container .button-resend:hover {
+    background: #777;
+  }
+  
+  .otp-container .button-resend:disabled {
+    background: #bbb;
+    cursor: not-allowed;
+  }
+  
+  /* Loader Animation */
+  .otp-container .loader {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid transparent;
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+  
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  
+  /* Fade-in Animation */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  
+  

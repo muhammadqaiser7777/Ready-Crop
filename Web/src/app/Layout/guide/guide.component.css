@@ -1,0 +1,237 @@
+/* General Styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    overflow-x: hidden;
+    font-family: 'Arial', sans-serif;
+}
+
+.guide-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: var(--card-bg);
+    border-radius: 15px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+    overflow-x: hidden;
+}
+
+/* Header */
+.head {
+    background-color: #f2f2f2;
+    padding: 40px;
+    text-align: center;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.head h1 {
+    font-family: 'Roboto', sans-serif;
+    font-size: 36px;
+    color: #2d6a4f;
+    margin-bottom: 20px;
+}
+
+.head p {
+    font-size: 18px;
+    color: #6b705c;
+    line-height: 1.6;
+}
+
+/* Dropdown */
+select {
+    width: 100%;
+    max-width: 400px;
+    margin: 20px auto;
+    display: block;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 10px;
+    border: 1px solid rgb(198, 181, 181);
+}
+
+/* Card System */
+.card-wrapper {
+    display: flex;
+    justify-content: center;
+    perspective: 1000px;
+    width: 100%;
+    margin: 20px auto;
+}
+
+.card {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    height: 350px;
+    transform-style: preserve-3d;
+    transition: transform 0.8s ease;
+    cursor: pointer;
+}
+
+.card.flipped {
+    transform: rotateY(180deg);
+}
+
+.card-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    box-shadow: 0 6px 18px rgba(47, 135, 87, 0.15);
+    backface-visibility: hidden;
+    background: white;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    text-align: center;
+}
+
+.card-face.front img {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    margin-bottom: 16px;
+}
+
+.card-face.front h2 {
+    font-size: 22px;
+    margin: 0;
+}
+
+.card-face.back {
+    transform: rotateY(180deg);
+    overflow-y: auto;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 24px;
+}
+
+.card-face.back h3 {
+    font-size: 20px;
+    margin-bottom: 16px;
+    text-align: center;
+    width: 100%;
+}
+
+/* FAQ Section */
+.faq-item {
+    width: 100%;
+    border-bottom: 1px solid var(--border-color);
+    padding: 12px 0;
+}
+
+.faq-item button {
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--card-text);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 1rem;
+}
+
+.faq-item svg {
+    transition: transform 0.3s;
+}
+
+.faq-item.open svg {
+    transform: rotate(180deg);
+}
+
+.faq-item p {
+    margin-top: 8px;
+    font-size: 14px;
+    color: var(--card-text);
+    line-height: 1.5;
+    background: var(--faq-bg);
+    padding: 10px;
+    border-radius: 8px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .guide-container {
+        padding: 16px;
+    }
+
+    .card {
+        max-width: 100%;
+        height: 360px;
+    }
+
+    .head {
+        padding: 30px 20px;
+    }
+
+    select {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .card {
+        height: 380px;
+    }
+
+    .card-face {
+        padding: 16px;
+    }
+
+    .card-face.back {
+        padding: 16px;
+    }
+
+    .faq-item button {
+        flex-wrap: wrap;
+    }
+}
+
+/* Utility */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+.faq-button {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 1rem;
+    background-color: white;
+    border: none;
+    border-bottom: 1px solid #ccc;
+    text-align: left;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.faq-button .question-text {
+    flex: 1;
+}
+
+.up-down svg {
+    margin-left: 1rem;
+}

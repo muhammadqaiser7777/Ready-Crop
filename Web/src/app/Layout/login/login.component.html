@@ -1,0 +1,64 @@
+<div class="container">
+
+    <div *ngIf="loading" class="loader-overlay">
+        <div class="loader"></div>
+    </div>      
+    <form class="form" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <div class="logo-center">
+            <div class="logo">
+                <img src="../../../assets/Logos/Ready-Crop-Logo-Transparent (1).ico" alt="Ready Crop Logo" id="logo">
+            </div>
+        </div>
+
+        <h2 class="form-title">Login</h2>
+
+        <div class="input-container">
+            <label>Email</label>
+            <div class="inputForm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32"> 
+                    <g data-name="Layer 3" id="Layer_3"> <path d="m30.853 13.87a15 15 0 0 0 -29.729 4.082 15.1 15.1 0 0 0 12.876 12.918 15.6 15.6 0 0 0 2.016.13 14.85 14.85 0 0 0 7.715-2.145 1 1 0 1 0 -1.031-1.711 13.007 13.007 0 1 1 5.458-6.529 2.149 2.149 0 0 1 -4.158-.759v-10.856a1 1 0 0 0 -2 0v1.726a8 8 0 1 0 .2 10.325 4.135 4.135 0 0 0 7.83.274 15.2 15.2 0 0 0 .823-7.455zm-14.853 8.13a6 6 0 1 1 6-6 6.006 6.006 0 0 1 -6 6z"></path> </g> 
+                </svg>
+                <input formControlName="email" placeholder="Enter your Email" class="input" type="email">
+            </div>
+        </div>
+
+        <div class="input-container">
+            <label>Password</label>
+            <div class="inputForm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="-64 0 512 512">
+                    <path d="m336 512h-288c-26.453125 0-48-21.523438-48-48v-224c0-26.476562 21.546875-48 48-48h288c26.453125 0 48 21.523438 48 48v224c0 26.476562-21.546875 48-48 48zm-288-288c-8.8125 0-16 7.167969-16 16v224c0 8.832031 7.1875 16 16 16h288c8.8125 0 16-7.167969 16-16v-224c0-8.832031-7.1875-16-16-16zm0 0"></path>
+                    <path d="m304 224c-8.832031 0-16-7.167969-16-16v-80c0-52.929688-43.070312-96-96-96s-96 43.070312-96 96v80c0 8.832031-7.167969 16-16 16s-16-7.167969-16-16v-80c0-70.59375 57.40625-128 128-128s128 57.40625 128 128v80c0 8.832031-7.167969 16-16 16zm0 0"></path>
+                </svg>
+                <input formControlName="password" placeholder="Enter your Password" class="input" 
+                    [type]="showPassword ? 'text' : 'password'">
+                <span class="eye-icon" (click)="togglePassword()">
+                    <svg *ngIf="!showPassword" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="grey" viewBox="0 0 64 64">
+                        <path d="M32 16c-13.254 0-24 16-24 16s10.746 16 24 16 24-16 24-16-10.746-16-24-16zm0 24a8 8 0 1 1 8-8 8.008 8.008 0 0 1-8 8z"/>
+                    </svg>
+                      <svg *ngIf="showPassword" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="grey" viewBox="0 0 64 64">
+                        <path d="M32 16c-13.254 0-24 16-24 16s10.746 16 24 16 24-16 24-16-10.746-16-24-16zm0 24a8 8 0 1 1 8-8 8.008 8.008 0 0 1-8 8z"/>
+                        <line x1="8" y1="8" x2="56" y2="56" stroke="grey" stroke-width="4"/>
+                    </svg>
+                </span>
+            </div>
+            <div *ngIf="passwordControl?.hasError('minlength') && (passwordControl?.touched || passwordControl?.dirty)"
+                class="error-message">
+                Password must be at least 8 characters long
+            </div>
+        </div>
+        
+        <div *ngIf="errorMessage" class="error-message">
+            {{ errorMessage }}
+        </div>
+        
+        <span class="forgot-password" (click)="onForgotPasswordClick()">Forgot password?</span>
+
+        <button class="button-submit" type="submit" [disabled]="!loginForm.valid" (click)="onSubmit()">Log In</button>
+
+
+        <p class="p">
+            Don't have an account?
+            <span class="signup-link" (click)="onSignupClick()">Sign Up</span>
+        </p>      
+    </form>
+</div>
