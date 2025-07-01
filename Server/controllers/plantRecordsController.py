@@ -28,8 +28,8 @@ def savePlantRecord():
             return jsonify({"error": "Confidence must be a number"}), 400
 
         # Check plant_type
-        if plant_type.lower() != "green_chilli":
-            return jsonify({"error": "Only 'green_chilli' plant type is supported"}), 400
+        if plant_type.lower() not in ["green_chilli", "garlic", "onion"]:
+            return jsonify({"error": "Only 'green_chilli, garlic and onion is supported for now!' plant type is supported"}), 400
 
         # Match user by auth_token and check status
         try:
@@ -135,4 +135,66 @@ def deletePlantRecord():
 
     except Exception as e:
         print(f"Error in deletePlantRecord: {str(e)}")
+        return jsonify({"error": "Internal server error"}), 500
+
+
+def viewPlantRecords():
+    """Returns all plant records (plant_type, class, confidence, created_at, plant_id) for a verified user."""
+    try:
+        try:
+            data = request.get_json()
+        except Exception:
+            return jsonify({"error": "Invalid JSON format"}), 400
+
+        if not data or "auth_token" not in data:
+            return jsonify({"error": "Missing required field: auth_token"}), 400
+
+        auth_token = data["auth_token"]
+
+        # Match user by auth_token and check status
+        try:
+            user_response = supabase.table("users") \
+                .select("id", "status") \
+                .eq("auth_token", auth_token) \
+                .single() \
+                .execute()
+            user_data = user_response.data
+        except Exception:
+            return jsonify({"error": "Database error while verifying user"}), 500
+
+        if not user_data or "id" not in user_data:
+            return jsonify({"error": "Invalid auth_token"}), 401
+
+        if user_data.get("status") != "Verified":
+            return jsonify({"error": "User is not verified. Please verify your email before proceeding."}), 403
+
+        user_id = user_data["id"]
+
+        # Fetch plant records
+        try:
+            records_response = supabase.table("plant_records") \
+                .select("id", "plant_type", "class", "confidence", "created_at") \
+                .eq("owned_by", user_id) \
+                .order("created_at", desc=False) \
+                .execute()
+            records_data = records_response.data
+        except Exception:
+            return jsonify({"error": "Database error while fetching plant records"}), 500
+
+        # Rename 'id' to 'plant_id' in each record
+        plant_records = [
+            {
+                "plant_id": record["id"],
+                "plant_type": record["plant_type"],
+                "class": record["class"],
+                "confidence": record["confidence"],
+                "created_at": record["created_at"]
+            }
+            for record in records_data
+        ]
+
+        return jsonify({"plant_records": plant_records}), 200
+
+    except Exception as e:
+        print(f"Error in viewPlantRecords: {str(e)}")
         return jsonify({"error": "Internal server error"}), 500

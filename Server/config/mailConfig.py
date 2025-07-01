@@ -215,7 +215,7 @@ def send_three_week_reminder(recipient, plant_class):
         subject = "3 Weeks Until Harvest - Ready Crop"
         body = (
             f"Dear User,\n\n"
-            f"Good news! Your {plant_class} plant is expected to be ready for harvest in approximately 3 weeks.\n\n"
+            f"Good news! Your plant is expected to be ready for harvest in approximately 3 weeks.\n\n"
             f"Keep monitoring your plant regularly, and stay tuned for more updates.\n\n"
             f"Regards,\n"
             f"Ready Crop"
@@ -252,7 +252,7 @@ def send_one_week_reminder(recipient, plant_class):
         subject = "1 Week Until Harvest - Ready Crop"
         body = (
             f"Dear User,\n\n"
-            f"This is a friendly reminder that your {plant_class} plant is expected to be ready for harvest in just 1 week!\n\n"
+            f"This is a friendly reminder that your plant is expected to be ready for harvest in just 1 week!\n\n"
             f"Prepare your tools and get ready to harvest at the optimal time.\n\n"
             f"Regards,\n"
             f"Ready Crop"

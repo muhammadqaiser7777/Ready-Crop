@@ -26,8 +26,8 @@ def change_password():
         new_password = data["new_password"]
         
         # Validate password strength
-        if len(new_password) < 8 or not re.search(r"[!@#$%^&*]", new_password):
-            return jsonify({"error": "New password must be at least 8 characters long and contain at least one special character"}), 400
+        if len(new_password) < 8:
+            return jsonify({"error": "New password must be at least 8 characters long "}), 400
         
         # Fetch user by email
         response = supabase.table("users").select("*").eq("email", email).execute()

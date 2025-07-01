@@ -10,6 +10,8 @@ ALLOWED_FIELDS_FOR_SIGNUP = {"full_name", "email", "password", "gender"}
 
 ALLOWED_FIELDS_FOR_SIGNUP = {"full_name", "email", "password", "gender"}
 
+import random
+
 def signup():
     """Handles user signup with proper exception handling."""
     try:
@@ -55,7 +57,8 @@ def signup():
             return jsonify({"error": "Database error while checking existing user"}), 500
 
         valid_genders = {"male", "female", "other"}
-        if gender.lower() not in valid_genders:
+        gender = gender.lower()
+        if gender not in valid_genders:
             return jsonify({"error": "Gender must be male, female, or other"}), 400
 
         print(f"Generating OTP for {email}")
@@ -63,14 +66,19 @@ def signup():
         if not otp:
             return jsonify({"error": "Failed to send OTP email"}), 500
 
-        gender = gender.lower()
-        formatted_name = full_name.replace(" ", "_")
-        profile_pics = {
-            "male": f"https://avatar.iran.liara.run/public/boy?username={formatted_name}",
-            "female": f"https://avatar.iran.liara.run/public/girl?username={formatted_name}",
-            "other": "./static/Public/Avatars/other_avatar.png"
-        }
-        profile_pic = profile_pics.get(gender, "./static/Public/Avatars/default.png")
+        # Select profile picture
+        base_url = "http://127.0.0.1:5000"
+        if gender == "male":
+            filename = f"{random.randint(1, 15)}.png"
+            path = f"static/public/Avatars/male-avatars/{filename}"
+        elif gender == "female":
+            filename = f"{random.randint(1, 15)}.png"
+            path = f"static/public/Avatars/female-avatars/{filename}"
+        else:
+            filename = "other_avatar.png"
+            path = f"static/public/Avatars/{filename}"
+
+        profile_pic = f"{base_url}/{path}"
 
         hashed_password = hash_password(password)
         hashed_otp = hash_otp(otp)
@@ -104,6 +112,7 @@ def signup():
     except Exception as e:
         print(f"Unexpected signup error: {str(e)}")
         return jsonify({"error": "Internal server error"}), 500
+
     
 
 def verify():

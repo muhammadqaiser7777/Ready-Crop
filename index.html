@@ -1,0 +1,118 @@
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <title>🌤️ Weather App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(135deg, #6dd5fa, #2980b9);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        }
+
+        .container {
+        background-color: rgba(255, 255, 255, 0.1);
+        padding: 30px;
+        border-radius: 20px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+        text-align: center;
+        width: 90%;
+        max-width: 400px;
+        }
+
+        h2 {
+        margin-bottom: 20px;
+        font-weight: 600;
+        }
+
+        input[type="text"] {
+        padding: 10px;
+        width: 80%;
+        border: none;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        font-size: 16px;
+        }
+
+        button {
+        padding: 10px 20px;
+        border: none;
+        background-color: #fff;
+        color: #2980b9;
+        font-weight: bold;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+        background-color: #f1f1f1;
+        }
+
+        #result {
+        margin-top: 20px;
+        }
+
+        #result img {
+        width: 100px;
+        height: 100px;
+        }
+
+        .error {
+        color: #ffdddd;
+        background-color: rgba(255, 0, 0, 0.2);
+        padding: 10px;
+        border-radius: 8px;
+        margin-top: 15px;
+        }
+    </style>
+    </head>
+    <body>
+    <div class="container">
+        <h2>🌤️ Check Weather</h2>
+        <input type="text" id="city" placeholder="Enter city name">
+        <br>
+        <button onclick="getWeather()">Get Weather</button>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        async function getWeather() {
+        const city = document.getElementById('city').value;
+        const resultDiv = document.getElementById('result');
+        resultDiv.innerHTML = '⏳ Loading...';
+
+        try {
+            const response = await fetch(`http://localhost:5000/weather?city=${encodeURIComponent(city)}`);
+            const data = await response.json();
+
+            if (data.error) {
+            resultDiv.innerHTML = `<div class="error">${data.error}</div>`;
+            } else {
+            resultDiv.innerHTML = `
+                <h3>📍 ${data.city}</h3>
+                <img src="http://openweathermap.org/img/wn/${data.icon}@2x.png" alt="Weather Icon">
+                <p><strong>${data.temperature}°C</strong> - ${data.description}</p>
+            `;
+            }
+        } catch (error) {
+            resultDiv.innerHTML = `<div class="error">⚠️ Failed to fetch weather data</div>`;
+            console.error(error);
+        }
+        }
+    </script>
+    </body>
+    </html>
