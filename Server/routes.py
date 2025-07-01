@@ -77,6 +77,3 @@ routes.route("/generate-notifications", methods=["POST"])(generate_notifications
 routes.route("/check-unread-notifications", methods=["POST"])(check_unread_notifications)
 # Retrieves all notifications for the authenticated user
 routes.route("/get_user_notifications", methods=["GET"])(get_user_notifications)
-
-
-routes.route("/weather", methods=["GET"])(get_weather)
