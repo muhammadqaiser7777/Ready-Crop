@@ -184,23 +184,6 @@ Based on:
 
 ---
 
-## 📆 Project Structure
-
-```
-Ready-Crop/
-├── backend/
-│   ├── app.py
-│   ├── controllers/
-│   ├── config/
-│   ├── ml/
-│   ├── .env
-│   └── requirements.txt
-├── web/                # Angular frontend
-│   └── src/
-├── model/              # YOLOv8 model
-└── README.md
-```
-
 ---
 
 ## ✨ Roadmap
