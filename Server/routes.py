@@ -8,8 +8,7 @@ from controllers.otpController import otpRefresh, validate_otp
 from controllers.predictController import predict_green_chilli
 from controllers.plantRecordsController import savePlantRecord, deletePlantRecord, viewPlantRecords
 from controllers.mailReminderController import check_and_send_reminders
-from controllers.notificationController import generate_notifications, check_unread_notifications, get_user_notifications
-from controllers.weatherController import get_weather
+from controllers.notificationController import generate_notifications, check_unread_notifications, get_user_notifications, delete_notification
 
 # Initialize Blueprint
 routes = Blueprint("routes", __name__)
@@ -76,4 +75,6 @@ routes.route("/generate-notifications", methods=["POST"])(generate_notifications
 # Checks for unread notifications for the authenticated user
 routes.route("/check-unread-notifications", methods=["POST"])(check_unread_notifications)
 # Retrieves all notifications for the authenticated user
-routes.route("/get_user_notifications", methods=["GET"])(get_user_notifications)
+routes.route("/get_user_notifications", methods=["POST"])(get_user_notifications)
+# Deletes a specific notification by ID
+routes.route("/delete_notification", methods=["POST"])(delete_notification)

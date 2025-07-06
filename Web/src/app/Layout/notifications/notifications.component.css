@@ -1,0 +1,85 @@
+    .notifications {
+    padding: 20px;
+    max-width: 600px;
+    margin: auto;
+    font-family: Arial, sans-serif;
+    }
+
+    .notifications h2 {
+    margin-top: 24px;
+    color: #2e7d32;
+    font-size: 20px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 6px;
+    }
+
+    .notifications ul {
+    list-style-type: none;
+    padding: 0;
+    margin-top: 10px;
+    }
+
+    .notification {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    transition: background 0.3s ease;
+    position: relative;
+    }
+
+    /* Dark green for unread */
+    .notification.unread {
+    background-color: #1b5e20;
+    color: #ffffff;
+    border-left: 4px solid #00e676;
+    font-weight: bold;
+    }
+
+    /* Light green for read */
+    .notification.read {
+    background-color: #c8e6c9;
+    color: #2e7d32;
+    border-left: 4px solid #81c784;
+    }
+
+    /* Notification message styling (wrap text properly) */
+    .notification span {
+    flex-grow: 1;
+    word-break: break-word;
+    }
+
+    /* Delete button */
+    .delete-btn {
+    background-color: white;
+    color: #d32f2f;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 50%;
+    border: 1px solid #d32f2f;
+    cursor: pointer;
+    margin-bottom: 2px;
+    }
+
+    .delete-btn:hover {
+    background-color: #b71c1c;
+    transition: background-color 0.7s ease;
+    color: white;
+    }
+
+    /* Empty message */
+    .empty {
+    color: #999;
+    font-style: italic;
+    margin-left: 10px;
+    }
+
+    /* Loader style */
+    .loader {
+    font-style: italic;
+    color: #555;
+    padding: 10px 0;
+    }

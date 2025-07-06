@@ -12,7 +12,6 @@ import {
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../../Services/back-end-service.service';
 import { FormsModule } from '@angular/forms';
-import { ChangePasswordComponent } from '../change-password/change-password.component';
 
 @Component({
   selector: 'app-layout',
@@ -52,23 +51,24 @@ export class LayoutComponent implements AfterViewInit, OnDestroy, OnInit {
 ngOnInit() {
   this.checkAuthStatus();
   this.loadComponent('agePredictor');
-  this.storageCheckInterval = setInterval(() => {
-    this.checkAuthStatus();
-  }, 2000);
 
-  // Start polling for notifications
-  this.notificationInterval = setInterval(() => {
-    this.checkUnreadNotifications();
-  }, 60000); // 60,000 ms = 1 minute
+  if (this.loggedIn) {
+    this.notificationInterval = setInterval(() => {
+      this.checkUnreadNotifications();
+    }, 2000);
+  }
 }
 
 
-  ngAfterViewInit() {
-      this.checkUnreadNotifications();
-    if (this.content) {
-      this.loadComponent('agePredictor');
-    }
-  }
+
+ngAfterViewInit() {
+  setTimeout(() => {
+    const isLoggedIn = this.checkAuthStatus();
+    this.loadComponent('agePredictor');
+    this.checkUnreadNotifications();
+  });
+}
+
 
   toggleProfileDropdown() {
     this.profileDropdownOpen = !this.profileDropdownOpen;
@@ -90,27 +90,41 @@ ngOnInit() {
         localStorage.clear();
         this.checkAuthStatus();
         this.profileDropdownOpen = false;
-  
+        this.loggedIn = false;
+        
         // ✅ Load the age predictor component after logout
         this.selectedComponent = ''; // reset to allow reloading
         await this.loadComponent('agePredictor');
+        if (this.notificationInterval) {
+          clearInterval(this.notificationInterval);
+        }
       },
       error: (error) => {
         localStorage.clear();
+        this.loggedIn = false;
+        if (this.notificationInterval) {
+          clearInterval(this.notificationInterval);
+        }
       }
     });
   }
   
 
-  checkAuthStatus() {
-    const requiredKeys = ["auth_token", "email", "full_name", "gender", "profile_pic", "status"];
-    this.userData = {};
-    requiredKeys.forEach(key => {
-      this.userData[key] = localStorage.getItem(key);
-    });
+checkAuthStatus(): boolean {
+  const requiredKeys = ['auth_token', 'email', 'full_name', 'profile_pic', 'status'];
+  this.userData = {};
+  requiredKeys.forEach(key => {
+    this.userData[key] = localStorage.getItem(key);
+  });
 
-    this.loggedIn = requiredKeys.every(key => !!this.userData[key]);
-  }
+  const isLoggedIn = requiredKeys.every(key =>
+    this.userData[key] && this.userData[key] !== 'null' && this.userData[key]?.trim() !== ''
+  );
+
+  this.loggedIn = isLoggedIn;
+  return isLoggedIn;
+}
+
 
   async loadComponent(componentName: string) {
     if (this.selectedComponent === componentName || !this.content) return;
@@ -142,6 +156,7 @@ ngOnInit() {
           this.componentRef.instance.signupSuccess?.subscribe(() => {
             this.checkAuthStatus();
             this.loadComponent('agePredictor');
+            this.loggedIn = true;
           });
           break;
 

@@ -154,10 +154,11 @@ def get_user_notifications():
         plant_map = {p["id"]: {"plant_type": p["plant_type"], "class": p["class"]} for p in plants}
         plant_ids = list(plant_map.keys())
 
-        # Get all notifications for these plants
+        # Get all notifications for these plants where deleted is False
         notif_response = supabase.table("plant_notifications") \
             .select("id, plant_id, type, is_read, created_at") \
             .in_("plant_id", plant_ids) \
+            .eq("deleted", False) \
             .order("created_at", desc=False) \
             .execute()
 
@@ -192,4 +193,57 @@ def get_user_notifications():
 
     except Exception as e:
         print(f"Error in get_user_notifications: {str(e)}")
+        return jsonify({"error": "Internal server error"}), 500
+
+    
+
+def delete_notification():
+    try:
+        body = request.get_json()
+        auth_token = body.get("auth_token")
+        notification_id = body.get("notification_id")
+        plant_id = body.get("plant_id")
+
+        # Validate input
+        if not auth_token or not notification_id or not plant_id:
+            return jsonify({"error": "Missing one or more required fields"}), 400
+
+        # Get user using auth_token
+        user_response = supabase.table("users") \
+            .select("id") \
+            .eq("auth_token", auth_token) \
+            .single() \
+            .execute()
+
+        user = user_response.data
+        if not user:
+            return jsonify({"error": "Invalid auth_token"}), 401
+
+        user_id = user["id"]
+
+        # Check if the plant_id belongs to this user
+        plant_response = supabase.table("plant_records") \
+            .select("owned_by") \
+            .eq("id", plant_id) \
+            .single() \
+            .execute()
+
+        plant = plant_response.data
+        if not plant or plant["owned_by"] != user_id:
+            return jsonify({"error": "Unauthorized access to plant record"}), 403
+
+        # Soft delete the notification (set deleted = True)
+        delete_response = supabase.table("plant_notifications") \
+            .update({"deleted": True}) \
+            .eq("id", notification_id) \
+            .eq("plant_id", plant_id) \
+            .execute()
+
+        if delete_response.data is None:
+            return jsonify({"error": "Failed to delete notification"}), 500
+
+        return jsonify({"message": "Notification deleted successfully"}), 200
+
+    except Exception as e:
+        print(f"Error in delete_notification: {str(e)}")
         return jsonify({"error": "Internal server error"}), 500
