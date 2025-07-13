@@ -45,12 +45,15 @@ export class PlantRecordsComponent implements OnInit {
     const payload = { auth_token: authToken };
     this.apiService.post('view-plant-records', payload).subscribe({
       next: (response: any) => {
-        this.plantRecords = response.plant_records.map((record: any) => ({
-          ...record,
-          id: record.plant_id,
-          plant_type_name: this.convertToName(record.plant_type),
-          savedOn: this.formatDate(record.created_at)
-        }));
+        this.plantRecords = response.plant_records
+          .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+          .map((record: any) => ({
+            ...record,
+            id: record.plant_id,
+            plant_type_name: this.convertToName(record.plant_type),
+            savedOn: this.formatDate(record.created_at)
+          }));
+
         this.loading = false;
       },
       error: (error) => {

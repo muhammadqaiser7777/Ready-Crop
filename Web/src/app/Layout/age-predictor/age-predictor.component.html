@@ -2,6 +2,7 @@
   <h2 class="title">Smart Harvest</h2>
   <h2 class="title">Upload <br>&<br> Predict</h2>
 
+  <!-- Dropdown for plant -->
   <div class="dropdown-wrapper">
     <div class="dropdown-container">
       <label for="plant-select">Select Plant:</label>
@@ -13,6 +14,7 @@
     <img *ngIf="selectedPlant === 'green-chilli'" src="../../../assets/Logos/green-chilli.png" alt="Green Chilli" class="icon">
   </div>
 
+  <!-- Image upload -->
   <div class="image-upload" (click)="handleImageUploadClick()" [class.has-image]="!!image">
     <p *ngIf="!image" class="prompt">
       <svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" fill="grey" class="bi bi-image-fill" viewBox="0 0 16 16">
@@ -22,29 +24,91 @@
     <img *ngIf="image" [src]="image" alt="Processed Image" class="processed-image" />
   </div>
 
-  <div *ngIf="image && !loading" class="button-group">
+  <!-- Buttons before prediction -->
+  <div *ngIf="image && !loading && detections.length === 0" class="button-group">
     <button (click)="handleTakeNewPicture()">Retake</button>
     <button (click)="handleSubmit()">Analyze</button>
   </div>
 
+  <!-- Loader -->
   <div *ngIf="loading" class="loader-container">
     <l-helix size="60" speed="2.5" color="#024f09"></l-helix>
     <p class="status-text">{{ status }}</p>
   </div>
 
+  <!-- Status message -->
   <div *ngIf="!loading && status && image" class="result-status">
     <p>{{ status }}</p>
   </div>
 
-  <!-- 👇 Detections Display -->
-  <div *ngIf="!loading && detections.length > 0" class="detections-list">
+  <!-- Detected Results Section -->
+  <div *ngIf="!loading && detections.length > 0" class="detections-section">
+    
+    <!-- Preview of all detections -->
     <h3>Detected Plants:</h3>
-    <ul>
+    <ul class="detections-list">
       <li *ngFor="let detection of detections">
-        <div class="detection-item">
-          <p>{{ detection.class_name }} - Confidence: {{ detection.confidence | percent:'1.0-2' }}</p>
-        </div>
+        {{ detection.class_name }} - Confidence: {{ detection.confidence | percent:'1.0-2' }}
       </li>
     </ul>
+
+    <!-- Save blocked messages -->
+    <div *ngIf="!loggedIn || !verified" class="save-warning">
+      <p *ngIf="!loggedIn">⚠️ Please log in to save plant records.</p>
+      <p *ngIf="loggedIn && !verified">⚠️ Your verification is pending. Please verify your account to save plants.</p>
+    </div>
+
+    <!-- Save checklist UI (only for verified and logged-in users) -->
+    <div *ngIf="loggedIn && verified && showSavePopup">
+      <button class="select-all-btn" (click)="selectAll()">Select All</button>
+
+      <ul class="detections-list">
+        <ng-container *ngFor="let detection of detections; let i = index">
+          <li *ngIf="isValidClass(detection.class_name)">
+            <label class="checkbox-item">
+              <input type="checkbox" [checked]="selectedDetections.has(i)" (change)="toggleSelection(i)" />
+              {{ detection.class_name }} - Confidence: {{ detection.confidence | percent:'1.0-2' }}
+            </label>
+          </li>
+        </ng-container>
+      </ul>
+
+      <button 
+        class="button-submit" 
+        (click)="saveSelectedDetections()" 
+        [disabled]="selectedDetections.size === 0">
+        Save Selected ({{ selectedDetections.size }})
+      </button>
+    </div>
+
+    <!-- Invalid Detections -->
+    <div class="invalid-detections">
+      <ul>
+        <ng-container *ngFor="let detection of detections">
+          <li *ngIf="!isValidClass(detection.class_name)">
+            ❌ {{ detection.class_name }} - Cannot be saved
+          </li>
+        </ng-container>
+      </ul>
+    </div>
+
+    <!-- Buttons should appear only once at the bottom -->
+    <div class="button-group">
+      <button (click)="handleTakeNewPicture()">Retake</button>
+      <button 
+        (click)="showSavePopup = true" 
+        [class.disabled]="!loggedIn || !verified"
+        [disabled]="!loggedIn || !verified">
+        Save Plant
+      </button>
+
+    </div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div class="custom-toast-container">
+  <div *ngFor="let toast of toasts" class="custom-toast" [ngClass]="toast.type">
+    {{ toast.message }}
   </div>
 </div>

@@ -71,14 +71,18 @@
     <!-- Pending Verification Dropdown -->
     <div class="profile-dropdown" *ngIf="profileDropdownOpen && userData['status'] === 'Pending'" #profileDropdown>
         <div class="pending-verification">
-            <p>Your account verification is <strong>pending</strong>.</p>
+            <p>Your account verification is <strong>Pending</strong>.</p>
         
             <button class="verify-popup" (click)="handleVerificationClick()" [disabled]="isLoading">
                 <ng-container *ngIf="!isLoading; else loading">
                 <b>Click here to verify</b>
                 </ng-container>
                 <ng-template #loading>
-                <span class="spinner"></span> Verifying...
+                    <!-- Loader -->
+                  <div *ngIf="isLoading" class="otp-loader">
+                    <span class="spinner"></span>
+                    <p>Verifying...</p>
+                  </div>
                 </ng-template>
             </button>
         
@@ -86,42 +90,55 @@
             </div>
         </div>
         
-        <!-- OTP Dialog Popup -->
-        <div class="otp-dialog-wrapper" *ngIf="otpDialogOpen">
-            <div class="otp-dialog">
-            <!-- Close Button -->
-            <button class="close-btn" (click)="closeOtpDialog()">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" />
-                </svg>
-            </button>
-        
-            <!-- Loader -->
-            <div *ngIf="isLoading" class="otp-loader">
-                <span class="spinner"></span>
-                <p>Processing...</p>
-            </div>
-        
-            <!-- Error Message -->
-            <div *ngIf="errorMessage && !isLoading" class="error-message">
-                <p>{{ errorMessage }}</p>
-            </div>
-        
-            <!-- OTP Expired Section -->
-            <ng-container *ngIf="otpStatus === 'expired' && !isLoading; else enterOtp">
-                <p>Previous OTP has expired.</p>
-                <button class="otp-buttons" (click)="refreshOtp()">Generate new OTP</button>
-            </ng-container>
-        
-            <!-- OTP Entry Section -->
-            <ng-template #enterOtp>
-                <p>Please enter the OTP sent to your email.</p>
-                <input type="text" [(ngModel)]="enteredOtp" placeholder="Enter OTP">
-                <p *ngIf="otpTimer > 0">Time left: {{ otpTimer }}s</p>
-                <button class="otp-buttons" (click)="submitOtp()">Verify</button>
-            </ng-template>
-        </div>
-        
+<!-- OTP Dialog Popup -->
+<div class="otp-dialog-wrapper" *ngIf="otpDialogOpen">
+  <div class="otp-dialog">
+    
+    <!-- Close Button -->
+    <button class="close-btn" (click)="closeOtpDialog()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+  <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+</svg>
+    </button>
+
+    <!-- Loader -->
+    <div *ngIf="isLoading" class="otp-loader">
+      <span class="spinner"></span>
+      <p>Processing...</p>
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="errorMessage && !isLoading" class="error-message">
+      <p>{{ errorMessage }}</p>
+    </div>
+
+    <!-- Dynamic OTP Content -->
+    <ng-container *ngIf="!isLoading">
+      <ng-container [ngSwitch]="otpStatus">
+
+        <!-- OTP Expired View -->
+        <ng-container *ngSwitchCase="'Expired'">
+          <p>Previous OTP has expired.</p>
+          <button class="otp-buttons" (click)="refreshOtp()">Generate new OTP</button>
+        </ng-container>
+
+        <!-- OTP Valid View -->
+        <ng-container *ngSwitchCase="'Valid'">
+          <p>Please enter the OTP sent to your email.</p>
+          <input type="text" [(ngModel)]="enteredOtp" placeholder="Enter OTP">
+          <p *ngIf="otpTimer > 0">Time left: {{ otpTimer }}s</p>
+          <button class="otp-buttons" (click)="submitOtp()">Verify</button>
+        </ng-container>
+
+        <!-- Default -->
+        <ng-container *ngSwitchDefault>
+          <p *ngIf="errorMessage">{{ errorMessage }}</p>
+        </ng-container>
+
+      </ng-container>
+    </ng-container>
+
+  </div>
 
         </div>
         

@@ -1,11 +1,13 @@
-from flask import request, jsonify
-from PIL import Image
-import numpy as np
-import cv2
+from flask import request, jsonify  # type: ignore
+from PIL import Image  # type: ignore
+import numpy as np  # type: ignore
+import cv2  # type: ignore
 import io
 import os
 import base64  # Import the base64 module
-from ultralytics import YOLO
+from ultralytics import YOLO # type: ignore
+
+BACKEND_URL = os.getenv("Backend_URL")
 
 # Load YOLOv9 model
 model_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "ML-models", "green_chilli.pt"))
@@ -56,7 +58,7 @@ def predict_green_chilli():
             # Add background for text (green rectangle)
             background_rect = (text_x - 5, text_y - text_height - 5, text_x + text_width + 5, text_y + 5)
             cv2.rectangle(annotated_image, (background_rect[0], background_rect[1]), 
-                          (background_rect[2], background_rect[3]), (0, 255, 0), -1)  # Green background
+                        (background_rect[2], background_rect[3]), (0, 255, 0), -1)  # Green background
 
             # Place the text (black color)
             cv2.putText(annotated_image, text, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX,
@@ -83,9 +85,10 @@ def predict_green_chilli():
 
         # Return the path of the saved image and the detections
         return jsonify({
-            'image_path': f'static/Public/green-chilli-predictions/{image_filename}',
-            'detections': detections
-        })
+    'image_path': f'{BACKEND_URL}static/Public/green-chilli-predictions/{image_filename}',
+    'detections': detections
+})
+
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500

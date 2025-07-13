@@ -12,6 +12,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../../Services/back-end-service.service';
 import { FormsModule } from '@angular/forms';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-layout',
@@ -36,7 +37,7 @@ export class LayoutComponent implements AfterViewInit, OnDestroy, OnInit {
   @ViewChild('profileDropdown') profileDropdownRef!: ElementRef<HTMLElement>;
   @ViewChild('profileButton') profileButtonRef!: ElementRef<HTMLElement>;
 
-  constructor(private apiService: ApiService) {}
+  constructor(private apiService: ApiService, private cdRef: ChangeDetectorRef) {}
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
@@ -52,12 +53,15 @@ ngOnInit() {
   this.checkAuthStatus();
   this.loadComponent('agePredictor');
 
-  if (this.loggedIn) {
+  const status = localStorage.getItem('status');
+  
+  if (this.loggedIn && status === 'Verified') {
     this.notificationInterval = setInterval(() => {
       this.checkUnreadNotifications();
     }, 2000);
   }
 }
+
 
 
 
@@ -213,7 +217,7 @@ ngOnDestroy() {
 
 // Properties
 otpDialogOpen = false;
-otpStatus: 'valid' | 'expired' | '' = '';
+otpStatus: 'Valid' | 'Expired' | '' = '';
 enteredOtp = '';
 otpTimer = 0;
 otpInterval: any;
@@ -227,36 +231,34 @@ handleVerificationClick() {
     this.errorMessage = "Email not found in local storage.";
     return;
   }
-
   const email = storedEmail.toLowerCase().trim();
   this.isLoading = true;
 
   this.apiService.post('validate-otp', { email }).subscribe({
     next: (response) => {
       this.isLoading = false;
-      const status = response?.message?.toLowerCase(); 
-      const otpExpiry = new Date(response?.otp_expiry);
-    
-      if (status === 'valid' && otpExpiry) {
-        this.otpStatus = 'valid';  // ✅ Set status optimistically
-    
-        const timeDifference = otpExpiry.getTime() - new Date().getTime();
-        if (timeDifference > 0) {
-          this.otpDialogOpen = true;
-          this.startOtpTimer(otpExpiry);
-          this.errorMessage = '';
-        } else {
-          this.otpStatus = 'expired';  // ❗ Only mark expired if timer is already dead
-          this.otpDialogOpen = true;
-          this.errorMessage = '';
-        }
-    
-      } else if (status === 'expired') {
-        this.otpStatus = 'expired';
+
+      const status = response?.message; // Expected: "Valid" or "Expired"
+      const expiryString = response?.otp_expiry;
+      const otpExpiry = expiryString ? new Date(expiryString + 'Z') : null;
+
+      if (status === 'Valid' && otpExpiry && otpExpiry.getTime() > Date.now()) {
+        // ✅ OTP is valid
+        this.otpStatus = 'Valid';
+        this.otpDialogOpen = true;
+        this.errorMessage = '';
+        this.cdRef.detectChanges();
+        this.startOtpTimer(otpExpiry);
+      } else if (status === 'Expired') {
+        // ❌ OTP is expired (as confirmed by backend)
+        this.otpStatus = 'Expired';
         this.otpDialogOpen = true;
         this.errorMessage = '';
       } else {
+        // ❗ Unexpected fallback
         this.errorMessage = "Unexpected response from server.";
+        this.otpStatus = '';
+        this.otpDialogOpen = false;
       }
     },
     error: (err) => {
@@ -267,50 +269,50 @@ handleVerificationClick() {
   });
 }
 
+
 // Start Timer Based on Expiry
 startOtpTimer(otpExpiry: Date) {
   const currentTime = new Date();
   const timeDifference = otpExpiry.getTime() - currentTime.getTime();
 
+  clearInterval(this.otpInterval); // ✅ Always clear previous
+
   if (timeDifference <= 0) {
-    this.otpStatus = 'expired';
+    this.otpStatus = 'Expired';
     this.otpTimer = 0;
     return;
   }
 
   this.otpTimer = Math.floor(timeDifference / 1000);
-  clearInterval(this.otpInterval);
 
   this.otpInterval = setInterval(() => {
     this.otpTimer--;
     if (this.otpTimer <= 0) {
-      clearInterval(this.otpInterval);
-      this.otpStatus = 'expired';
+      clearInterval(this.otpInterval); // ✅ Avoid leaks
+      this.otpStatus = 'Expired';
     }
-  }, 100);
+  }, 1000); // ✅ Use 1000ms (not 100ms) for actual 1-second countdown
 }
 
-// Generate New OTP
+
 refreshOtp() {
   const email = localStorage.getItem('email');
   if (!email) return;
 
   this.isLoading = true;
+
   this.apiService.post('otp-refresh', { email }).subscribe({
     next: (response) => {
       this.isLoading = false;
-      const otpExpiry = new Date(response?.otp_expiry);
-      const timeDifference = otpExpiry.getTime() - new Date().getTime();
 
-      if (otpExpiry && timeDifference > 0) {
-        this.otpStatus = 'valid';
-        this.otpDialogOpen = true;
-        this.startOtpTimer(otpExpiry);
-        this.errorMessage = '';
-      } else {
-        this.otpStatus = 'expired';
-        this.errorMessage = "New OTP is already expired.";
-      }
+      const now = new Date();
+      const otpExpiry = new Date(now.getTime() + 175 * 1000); // 175 seconds from now
+
+      this.otpStatus = 'Valid';
+      this.otpDialogOpen = true;
+      this.startOtpTimer(otpExpiry);
+      this.cdRef.detectChanges();
+      this.errorMessage = '';
     },
     error: (err) => {
       this.isLoading = false;
@@ -323,21 +325,30 @@ refreshOtp() {
 // Submit OTP
 submitOtp() {
   const email = localStorage.getItem('email');
-  if (!email || !this.enteredOtp) return;
+  const authToken = localStorage.getItem('auth_token');
+
+  if (!email || !authToken || !this.enteredOtp) return;
 
   this.isLoading = true;
-  this.apiService.post('verify-otp', {
+
+  const body = {
     email,
+    auth_token: authToken,
     otp: this.enteredOtp
-  }).subscribe({
-    next: (response) => {
+  };
+
+  this.apiService.post('verify', body).subscribe({
+    next: () => {
       this.isLoading = false;
-      if (response?.status?.toLowerCase() === 'verified') {
-        localStorage.setItem('status', 'Verified');
-        this.closeOtpDialog();
-      } else {
-        this.errorMessage = "Incorrect OTP. Please try again.";
-      }
+
+      // ✅ Update localStorage
+      localStorage.setItem('status', 'Verified');
+
+      // ✅ Close OTP Dialog
+      this.closeOtpDialog();
+
+      // ✅ Refresh the entire page to reload layout/component state
+      window.location.reload();
     },
     error: (err) => {
       this.isLoading = false;
@@ -346,6 +357,7 @@ submitOtp() {
     }
   });
 }
+
 
 // Close Dialog
 closeOtpDialog() {
@@ -357,7 +369,10 @@ closeOtpDialog() {
 
 checkUnreadNotifications() {
   const authToken = localStorage.getItem('auth_token');
-  if (!authToken) {
+  const status = localStorage.getItem('status');
+
+  // Check if the user is verified and has a token
+  if (!authToken || status !== 'Verified') {
     this.newNotifications = false;
     return;
   }
@@ -366,13 +381,7 @@ checkUnreadNotifications() {
 
   this.apiService.post('check-unread-notifications', body, { observe: 'response' }).subscribe({
     next: (httpResponse) => {
-
-      if (httpResponse.body && httpResponse.body.unread_notifications === true) {
-        this.newNotifications = true;
-      } else {
-        this.newNotifications = false;
-      }
-
+      this.newNotifications = !!(httpResponse.body && httpResponse.body.unread_notifications === true);
     },
     error: (err) => {
       console.error("API error:", err);
@@ -380,6 +389,4 @@ checkUnreadNotifications() {
     }
   });
 }
-
-
 }

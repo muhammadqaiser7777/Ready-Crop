@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { helix } from 'ldrs';
@@ -15,15 +15,42 @@ helix.register();
   templateUrl: './age-predictor.component.html',
   styleUrls: ['./age-predictor.component.css']
 })
-export class AgePredictorComponent {
-  image: string | null = null;  // Image display in base64 format
+export class AgePredictorComponent implements OnInit {
+  image: string | null = null;
   loading: boolean = false;
   status: string = '';
   selectedPlant: string = '';
-  detections: any[] = [];  // Store the detections (class names, confidence, etc.)
+  detections: any[] = [];
   private fileBlob: File | null = null;
 
+  showSavePopup: boolean = false;
+  currentIndex: number = 0;
+  validClasses = ['1 month', '2 month', '3 month', '4 month', '5 month'];
+
+  // Toasts
+  toasts: { type: 'success' | 'error' | 'info' | 'warning', message: string }[] = [];
+
+  // User status
+  verified: boolean = false;
+  loggedIn: boolean = false;
+
+  // Checkbox logic
+  selectedDetections: Set<number> = new Set();
+
   constructor(private apiService: ApiService) {}
+
+  ngOnInit(): void {
+    this.loggedIn = !!localStorage.getItem('auth_token');
+    this.verified = localStorage.getItem('status') === 'Verified';
+  }
+
+  showToast(type: 'success' | 'error' | 'info' | 'warning', message: string) {
+    const toast = { type, message };
+    this.toasts.push(toast);
+    setTimeout(() => {
+      this.toasts = this.toasts.filter(t => t !== toast);
+    }, 3000);
+  }
 
   handleImageUploadClick() {
     const input = document.createElement('input');
@@ -61,46 +88,110 @@ export class AgePredictorComponent {
     if (input.files && input.files[0]) {
       this.fileBlob = input.files[0];
       this.image = URL.createObjectURL(this.fileBlob);
+      this.detections = [];
+      this.status = '';
     }
   }
 
   handleSubmit() {
     if (!this.fileBlob || !this.selectedPlant) {
-      alert("Please select a plant and upload an image.");
+      this.showToast('error', "Please select a plant and upload an image.");
       return;
     }
-  
+
     this.loading = true;
     this.status = "Analyzing image...";
-    this.detections = [];  // Reset detections each time
-  
+    this.detections = [];
+
     const formData = new FormData();
     formData.append('file', this.fileBlob);
     formData.append('plant', this.selectedPlant);
-  
-    // Define the backend URL (you can change this to match your production or dev server)
-    const backendUrl = 'http://localhost:5000';
-  
+
+
     this.apiService.post('predict-green-chilli', formData).subscribe({
       next: (response) => {
-        const imagePath = response?.image_path;  // Image path returned by backend
-        this.detections = response?.detections || [];  // Capture the detections (class names, confidence, etc.)
-  
+        const imagePath = response?.image_path;
+        this.detections = response?.detections || [];
+
         if (imagePath) {
-          this.image = `${backendUrl}/${imagePath}`;  // Prepend backend URL to the image path
-          this.status = `Prediction complete! ${this.detections.length} detections found.`;  // Show status with detections count
+          this.image = `${imagePath}`;
+          this.showToast('success', `${this.detections.length} detections found.`);
+          this.status = `Prediction complete! ${this.detections.length} detections found.`;
         } else {
           this.status = "No image returned from server.";
+          this.showToast('warning', "No image returned from server.");
         }
-  
+
         this.loading = false;
       },
       error: (err) => {
         console.error(err);
+        this.showToast('error', "Error during prediction.");
         this.status = "Error during prediction.";
         this.loading = false;
       }
     });
   }
-  
+
+  isValidClass(cls: string): boolean {
+    return this.validClasses.includes(cls);
+  }
+
+  toggleSelection(index: number) {
+    if (this.selectedDetections.has(index)) {
+      this.selectedDetections.delete(index);
+    } else {
+      this.selectedDetections.add(index);
+    }
+  }
+
+  selectAll() {
+    this.selectedDetections.clear();
+    this.detections.forEach((detection, index) => {
+      if (this.isValidClass(detection.class_name)) {
+        this.selectedDetections.add(index);
+      }
+    });
+  }
+
+  saveSelectedDetections() {
+    if (!this.loggedIn || !this.verified || this.selectedDetections.size === 0) return;
+
+    const formattedPlantType = this.selectedPlant.toLowerCase().replace(/[\s\-]+/g, '_');
+    const token = localStorage.getItem('auth_token');
+    const detectionArray = Array.from(this.selectedDetections);
+
+    const saveNext = (i: number) => {
+      if (i >= detectionArray.length) {
+        this.showToast('success', "All selected plants saved successfully!");
+        this.showSavePopup = false;
+        this.selectedDetections.clear();
+        return;
+      }
+
+      const index = detectionArray[i];
+      const detection = this.detections[index];
+
+      const body = {
+        auth_token: token,
+        plant_type: formattedPlantType,
+        class: detection.class_name,
+        confidence: detection.confidence
+      };
+
+      this.apiService.post('save-plant-record', body).subscribe({
+        next: () => {
+          this.showToast('success', `Saved ${detection.class_name} successfully!`);
+          saveNext(i + 1);
+        },
+        error: (err) => {
+          console.error(err);
+          this.showToast('error', `Error saving ${detection.class_name}`);
+          saveNext(i + 1); // continue regardless of failure
+        }
+      });
+    };
+
+    saveNext(0);
+  }
 }

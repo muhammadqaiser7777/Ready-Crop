@@ -5,12 +5,16 @@ from config.mailConfig import generate_otp
 from middleware.encrypt import hash_password, hash_otp, check_otp, check_password
 from middleware.authToken import generate_auth_token
 from email_validator import validate_email, EmailNotValidError # type: ignore
-
-ALLOWED_FIELDS_FOR_SIGNUP = {"full_name", "email", "password", "gender"}
-
-ALLOWED_FIELDS_FOR_SIGNUP = {"full_name", "email", "password", "gender"}
-
+import os
 import random
+
+
+# Load environment variable
+BACKEND_URL = os.getenv("Backend_URL")
+
+ALLOWED_FIELDS_FOR_SIGNUP = {"full_name", "email", "password", "gender"}
+
+BACKEND_URL = os.getenv("Backend_URL")
 
 def signup():
     """Handles user signup with proper exception handling."""
@@ -39,11 +43,9 @@ def signup():
         if not all([full_name, email, password, gender]):
             return jsonify({"error": "Full name, email, password, and gender are required"}), 400
 
-        # Validate password length
         if len(password) < 8:
             return jsonify({"error": "Password must be at least 8 characters long"}), 400
 
-        # Validate email format
         try:
             validate_email(email)
         except EmailNotValidError:
@@ -67,7 +69,6 @@ def signup():
             return jsonify({"error": "Failed to send OTP email"}), 500
 
         # Select profile picture
-        base_url = "http://127.0.0.1:5000"
         if gender == "male":
             filename = f"{random.randint(1, 15)}.png"
             path = f"static/public/Avatars/male-avatars/{filename}"
@@ -78,7 +79,10 @@ def signup():
             filename = "other_avatar.png"
             path = f"static/public/Avatars/{filename}"
 
-        profile_pic = f"{base_url}/{path}"
+        profile_pic_db_path = path  # saved to DB
+
+        # Add backend URL to send full path in response
+        profile_pic_response = f"{BACKEND_URL}{path.lstrip('/')}"
 
         hashed_password = hash_password(password)
         hashed_otp = hash_otp(otp)
@@ -89,7 +93,7 @@ def signup():
                 "email": email,
                 "full_name": full_name,
                 "password": hashed_password,
-                "profile_pic": profile_pic,
+                "profile_pic": profile_pic_db_path,
                 "gender": gender,
                 "status": status,
                 "otp": hashed_otp,
@@ -105,13 +109,14 @@ def signup():
             "auth_token": auth_token,
             "email": email,
             "status": status,
-            "profile_pic": profile_pic,
+            "profile_pic": profile_pic_response,
             "full_name": full_name
         }), 201
 
     except Exception as e:
         print(f"Unexpected signup error: {str(e)}")
         return jsonify({"error": "Internal server error"}), 500
+
 
     
 
@@ -228,11 +233,16 @@ def login():
             except Exception:
                 return jsonify({"error": "Database error while updating auth token"}), 500
 
+        # Prepend Backend_URL to profile_pic if needed
+        profile_pic = user.get("profile_pic")
+        if profile_pic and not profile_pic.startswith("http"):
+            profile_pic = f"{BACKEND_URL}{profile_pic.lstrip('/')}"
+
         response_data = {
             "email": user["email"],
             "gender": user["gender"],
             "full_name": user["full_name"],
-            "profile_pic": user["profile_pic"],
+            "profile_pic": profile_pic,
             "auth_token": auth_token,
             "status": user["status"]
         }
