@@ -98,6 +98,7 @@ SECRET_KEY=Your-Secret-Key-For-Production
 TEMP_SECRET_KEY=Temporary-Secret-Key-For-Development
 
 WEB_URL=Front-end-URL
+Backend_URL=Backend-URL
 
 MAIL_SERVER=smtp.gmail.com
 MAIL_PORT=587

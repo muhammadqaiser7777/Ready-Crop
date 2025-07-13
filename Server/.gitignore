@@ -9,5 +9,9 @@ __pycache__/
 controllers/__pycache__/
 middleware/__pycache__/
 config/__pycache__/
-static/Public/
-"Ready Crop Documentation.docx"
+
+# Ignore only predicted image files inside green-chilli-predictions
+static/Public/green-chilli-predictions/predicted_*.jpg
+
+# Allow the green-chilli-predictions folder to stay empty in repo
+!static/Public/green-chilli-predictions/.gitkeep
