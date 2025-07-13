@@ -10,9 +10,9 @@ Server/controllers/__pycache__/
 Server/middleware/__pycache__/
 Server/config/__pycache__/
 
-# Ignore all files in green-chilli-predictions, but keep folder
+# Ignore all predicted files in green-chilli-predictions, keep folder
 Server/static/Public/green-chilli-predictions/*
 !Server/static/Public/green-chilli-predictions/.gitkeep
 
-# Ignore the Word documentation file in root
+# Ignore Word document in root
 /Ready Crop Documentation.docx
