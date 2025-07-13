@@ -11,7 +11,7 @@ middleware/__pycache__/
 config/__pycache__/
 
 # Ignore only predicted image files inside green-chilli-predictions
-static/Public/green-chilli-predictions/predicted_****.jpg
+static/Public/green-chilli-predictions/
 
 # Allow the green-chilli-predictions folder to stay empty in repo
 !static/Public/green-chilli-predictions/.gitkeep
