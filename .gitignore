@@ -1,0 +1,18 @@
+# Ignore environment variables
+Server/.env
+
+# Ignore virtual environment
+Server/venv/
+
+# Ignore __pycache__ from Server, controllers, middleware, and config directories
+Server/__pycache__/
+Server/controllers/__pycache__/
+Server/middleware/__pycache__/
+Server/config/__pycache__/
+
+# Ignore all files in green-chilli-predictions, but keep folder
+Server/static/Public/green-chilli-predictions/*
+!Server/static/Public/green-chilli-predictions/.gitkeep
+
+# Ignore the Word documentation file in root
+/Ready Crop Documentation.docx
