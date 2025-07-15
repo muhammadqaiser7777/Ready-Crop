@@ -15,7 +15,13 @@ load_dotenv()
 WEB_URL = os.getenv("WEB_URL")
 
 app = Flask(__name__, static_url_path='/static')
-CORS(app, resources={r"/*": {"origins": "*"}})
+
+# ✅ Allow only your frontend (from .env)
+if WEB_URL:
+    CORS(app, resources={r"/*": {"origins": [WEB_URL]}})
+else:
+    # fallback (only for local testing)
+    CORS(app, resources={r"/*": {"origins": "*"}})
 
 app.config["SECRET_KEY"] = SECRET_KEY  # Use imported SECRET_KEY
 
@@ -32,9 +38,14 @@ def run_reminder_job():
 
 # Setup APScheduler
 scheduler = BackgroundScheduler()
-scheduler.add_job(run_reminder_job, 'interval', hours=1)  # For testing
-scheduler.start()
+scheduler.add_job(run_reminder_job, 'interval', hours=1)
 
+# ✅ Only start scheduler depending on environment
+if __name__ != "__main__":
+    # Running under Gunicorn (production)
+    scheduler.start()
 
 if __name__ == "__main__":
+    # Running locally
+    scheduler.start()
     app.run(host="0.0.0.0", port=5000, debug=True)
