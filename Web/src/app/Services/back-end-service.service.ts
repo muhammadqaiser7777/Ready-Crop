@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ApiService {
-  private backendUrl = 'https://e84bbb3b673e.ngrok-free.app/'; // Define backend URL
+  private backendUrl = 'http://localhost:5000/'; // Define backend URL
 
   constructor(private http: HttpClient) {}
 
