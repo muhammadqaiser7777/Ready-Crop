@@ -47,8 +47,27 @@
     <!-- Preview of all detections -->
     <h3>Detected Plants:</h3>
     <ul class="detections-list">
-      <li *ngFor="let detection of detections">
-        {{ detection.class_name }} - Confidence: {{ detection.confidence | percent:'1.0-2' }}
+      <li *ngFor="let detection of detections; let i = index">
+        <div class="detection-item">
+          <p>
+            <strong>Stage:</strong> {{ detection.class_name }} |
+            <strong>Disease:</strong> {{ detection.disease_class }} |
+            <strong>Confidence:</strong> {{ detection.confidence | percent:'1.0-2' }}
+          </p>
+          <button class="suggestion-btn" (click)="toggleSuggestion(i)">
+            {{ isSuggestionVisible(i) ? 'Hide Suggestion' : 'View Suggestion' }}
+          </button>
+
+          <!-- Suggestion Popup -->
+          <div class="suggestion-popup" *ngIf="isSuggestionVisible(i)">
+            <h4>Suggestions</h4>
+            <p>{{ detection.suggestion }}</p>
+            <ul *ngIf="detection.medications.length">
+              <li *ngFor="let med of detection.medications">{{ med }}</li>
+            </ul>
+            <button class="close-popup" (click)="toggleSuggestion(i)">Close</button>
+          </div>
+        </div>
       </li>
     </ul>
 
@@ -101,7 +120,6 @@
         [disabled]="!loggedIn || !verified">
         Save Plant
       </button>
-
     </div>
   </div>
 </div>

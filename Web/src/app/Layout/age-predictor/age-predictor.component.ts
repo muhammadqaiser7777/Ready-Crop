@@ -37,6 +37,37 @@ export class AgePredictorComponent implements OnInit {
   // Checkbox logic
   selectedDetections: Set<number> = new Set();
 
+  // Track visible suggestions
+  visibleSuggestions: Set<number> = new Set();
+
+  // Disease suggestions with medications
+  private DISEASE_SUGGESTIONS: { [key: string]: { advice: string, medications: string[] } } = {
+    "Healthy": {
+      advice: "✅ Your plant is healthy! Keep providing adequate water, nutrients, and monitor regularly for early signs of disease.",
+      medications: []
+    },
+    "Anthracnose": {
+      advice: "⚠️ Apply copper-based fungicides, prune infected areas, and avoid overhead irrigation.",
+      medications: ["Copper fungicide", "Mancozeb"]
+    },
+    "Bacterial Spot": {
+      advice: "⚠️ Use disease-free seeds, apply copper sprays, and remove infected leaves.",
+      medications: ["Copper spray", "Streptomycin"]
+    },
+    "Dotted": {
+      advice: "⚠️ Ensure balanced fertilization, improve air circulation, and apply preventive fungicides.",
+      medications: ["Neem oil", "Chlorothalonil"]
+    },
+    "Mozaic": {
+      advice: "⚠️ Remove and destroy infected leaves, control insect vectors (like aphids), and use resistant varieties.",
+      medications: ["Insecticidal soap", "Imidacloprid"]
+    },
+    "Trips": {
+      advice: "⚠️ Use sticky traps, introduce natural predators, and apply recommended insecticides if infestation is severe.",
+      medications: ["Spinosad", "Pyrethrin"]
+    }
+  };
+
   constructor(private apiService: ApiService) {}
 
   ngOnInit(): void {
@@ -107,16 +138,36 @@ export class AgePredictorComponent implements OnInit {
     formData.append('file', this.fileBlob);
     formData.append('plant', this.selectedPlant);
 
-
     this.apiService.post('predict-green-chilli', formData).subscribe({
       next: (response) => {
         const imagePath = response?.image_path;
-        this.detections = response?.detections || [];
+
+        // Structured detections with advice, medications, healthy flag
+        this.detections = (response?.detections || []).map((detection: any) => {
+          const disease = detection.disease_class;
+          const isHealthy = disease === 'Healthy';
+          const suggestionObj = this.DISEASE_SUGGESTIONS[disease] || { advice: "ℹ️ No suggestion available.", medications: [] };
+
+          return {
+            class_name: detection.class_name,
+            disease_class: disease,
+            confidence: detection.confidence,
+            suggestion: suggestionObj.advice,
+            medications: suggestionObj.medications,
+            healthy: isHealthy
+          };
+        });
+
+        // Overall plant health summary
+        const healthyCount = this.detections.filter(d => d.healthy).length;
+        const overallHealth = healthyCount === this.detections.length ?
+                              "✅ Plant is healthy" :
+                              "⚠️ Plant has some issues";
 
         if (imagePath) {
           this.image = `${imagePath}`;
-          this.showToast('success', `${this.detections.length} detections found.`);
-          this.status = `Prediction complete! ${this.detections.length} detections found.`;
+          this.status = `Prediction complete! ${this.detections.length} detections found. ${overallHealth}`;
+          this.showToast('success', `${this.detections.length} detections found. ${overallHealth}`);
         } else {
           this.status = "No image returned from server.";
           this.showToast('warning', "No image returned from server.");
@@ -131,6 +182,18 @@ export class AgePredictorComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  toggleSuggestion(index: number) {
+    if (this.visibleSuggestions.has(index)) {
+      this.visibleSuggestions.delete(index);
+    } else {
+      this.visibleSuggestions.add(index);
+    }
+  }
+
+  isSuggestionVisible(index: number): boolean {
+    return this.visibleSuggestions.has(index);
   }
 
   isValidClass(cls: string): boolean {
@@ -176,12 +239,14 @@ export class AgePredictorComponent implements OnInit {
         auth_token: token,
         plant_type: formattedPlantType,
         class: detection.class_name,
-        confidence: detection.confidence
+        confidence: detection.confidence,
+        disease: detection.disease_class,
+        suggestion: detection.suggestion
       };
 
       this.apiService.post('save-plant-record', body).subscribe({
         next: () => {
-          this.showToast('success', `Saved ${detection.class_name} successfully!`);
+          this.showToast('success', `Saved ${detection.class_name} with ${detection.disease_class} successfully!`);
           saveNext(i + 1);
         },
         error: (err) => {
