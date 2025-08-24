@@ -1,5 +1,3 @@
-
-````markdown
 <h1 align="center">🌱 Ready-Crop</h1>
 
 <p align="center">
@@ -20,19 +18,14 @@
 
 ## 📸 Overview
 
-**Ready-Crop** is a full-stack intelligent agriculture system that helps farmers and agri-tech users:
-
-* Predict plant growth stage and harvest timelines
-* Detect common plant diseases with confidence scores
-* Receive actionable suggestions for disease management
-
-Using deep learning and computer vision, users can upload plant images and get real-time feedback on growth stage, harvest readiness, and plant health.
+**Ready-Crop** is a full-stack intelligent agriculture system that helps farmers and agri-tech users predict the growth stage of plants, estimate harvest timelines, and detect common plant diseases with actionable suggestions using deep learning and computer vision.
 
 Key capabilities:
 
-* Upload plant images to predict age (1–5 months), harvest stage, and disease
-* View detected diseases with suggestions for treatment or prevention
-* Store and manage predictions via Supabase PostgreSQL database
+* Upload plant images to predict age (1–5 months) or harvest stage
+* Detect plant diseases (Healthy, Anthracnose, Bacterial Spot, Dotted, Mozaic, Trips) with confidence scores
+* Show disease suggestions for detected conditions
+* Store and manage predictions via a Supabase PostgreSQL database
 * Receive automated email and in-app reminders before harvest
 * Clean, responsive frontend built with Angular
 * Backend powered by Flask + YOLOv8 + PyTorch + SMTP + Supabase integration
@@ -43,11 +36,8 @@ Key capabilities:
 
 * 🔐 OTP-based Email Authentication
 * 📷 Image Upload and ML-Based Prediction (YOLOv8)
-* 🌱 **Disease Detection for Green Chilli**
-  * Detects: Healthy, Anthracnose, Bacterial Spot, Dotted, Mozaic, Trips
-  * Displays **confidence score** per detection
-  * Provides **actionable suggestions** to manage disease
-* 🗂 Plant Record Management with Timestamps
+* 🦠 Disease Detection with Suggestions
+* 🌱 Plant Record Management with Timestamps
 * ✉️ Automated Email Reminders (3 weeks & 1 week before harvest)
 * 🔔 In-App Notifications
 * 📊 Supabase PostgreSQL Storage
@@ -61,7 +51,7 @@ Key capabilities:
 | ------------ | ------------------------------ |
 | Frontend     | Angular, TypeScript, HTML/CSS  |
 | Backend      | Flask (Python), REST API       |
-| ML Model     | YOLOv8 (Roboflow, PyTorch) + Disease Classifier |
+| ML Model     | YOLOv8 + PyTorch (Roboflow)    |
 | Database     | Supabase (PostgreSQL)          |
 | Email System | SMTP (Gmail-based)             |
 | Auth         | OTP-based, Supabase-integrated |
@@ -75,35 +65,28 @@ Key capabilities:
 ```bash
 git clone https://github.com/muhammadqaiser7777/Ready-Crop.git
 cd Ready-Crop
-````
-
-### 🖙 Backend (Flask)
-
-```bash
+🖙 Backend (Flask)
+bash
+Copy
+Edit
 cd backend
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 cp .env.example .env  # Then fill in your actual values
 python app.py
-```
-
-### 🌐 Frontend (Angular)
-
-```bash
+🌐 Frontend (Angular)
+bash
+Copy
+Edit
 cd web
 npm install
 ng serve
 # Visit: http://localhost:4200
-```
-
----
-
-## 🧾 .env Configuration
-
-Create a `.env` file inside the `backend/` folder with the following:
-
-```env
+🧾 .env Configuration
+env
+Copy
+Edit
 SUPABASE_URL=Supabase-URL
 SUPABASE_KEY=Supabase-API-Key
 
@@ -119,106 +102,87 @@ MAIL_USERNAME=Your-Email
 MAIL_PASSWORD=App-Password-Gmail
 MAIL_USE_TLS=True
 MAIL_USE_SSL=False
+
 ```
+🌿 ML Integration
+Dataset labeled and trained using Roboflow
 
----
+YOLOv8 model exported as .pt and loaded via PyTorch
 
-## 🌿 ML Integration
+Flask serves the model via /predict-green-chilli
 
-* Dataset labeled and trained using **Roboflow**
-* YOLOv8 model exported as `.pt` and loaded via PyTorch
-* Flask serves the model via `/predict-green-chilli`
-* Classes used for growth stage: `1 month` to `5 month`, `Harvest` (ignores `Soil`, `null`)
-* **Disease detection** model supports: `Healthy`, `Anthracnose`, `Bacterial Spot`, `Dotted`, `Mozaic`, `Trips`
-* Each detection provides **confidence score** and **actionable suggestions** for disease treatment or prevention
+Classes used: 1 month to 5 month, Harvest (ignores Soil, null)
 
----
+Disease detection classes: Healthy, Anthracnose, Bacterial Spot, Dotted, Mozaic, Trips
 
-## ✉️ Email Reminder Logic
+Shows annotated images with harvest bounding boxes and disease labels, ensuring labels stay inside image edges
 
-A scheduled job (via `mailReminderController.py`) checks plant records and sends:
+✉️ Email Reminder Logic
+A scheduled job (via mailReminderController.py) checks plant records and sends:
 
-* 📩 3-week-before-harvest reminder
-* 📩 1-week-before-harvest reminder
+📩 3-week-before-harvest reminder
+
+📩 1-week-before-harvest reminder
 
 Based on:
 
-* `class` (predicted plant age)
-* `updated_at` timestamp (last prediction date)
+Class (predicted plant age)
 
----
+updated_at timestamp (last prediction date)
 
-## 🔁 API Endpoints
+🔁 API Endpoints
+🔐 Authentication
+Endpoint	Method	Description
+/signup	POST	Register new user
+/verify	POST	Verify email with OTP
+/login	POST	Log in and receive token
+/logout	POST	Invalidate token
 
-### 🔐 Authentication
+🔑 Password Management
+Endpoint	Method	Description
+/change-password	POST	Change password (auth required)
+/password-forget	POST	Initiate password reset
+/verify-identity	POST	Verify identity via OTP
+/set-new-password	POST	Set a new password
 
-| Endpoint | Method | Description              |
-| -------- | ------ | ------------------------ |
-| /signup  | POST   | Register new user        |
-| /verify  | POST   | Verify email with OTP    |
-| /login   | POST   | Log in and receive token |
-| /logout  | POST   | Invalidate token         |
+🔁 OTP Handling
+Endpoint	Method	Description
+/otp-refresh	POST	Resend OTP
+/validate-otp	POST	Validate OTP
 
-### 🔑 Password Management
+🌿 Prediction
+Endpoint	Method	Description
+/predict-green-chilli	POST	Predict plant class and detect disease
 
-| Endpoint          | Method | Description                     |
-| ----------------- | ------ | ------------------------------- |
-| /change-password  | POST   | Change password (auth required) |
-| /password-forget  | POST   | Initiate password reset         |
-| /verify-identity  | POST   | Verify identity via OTP         |
-| /set-new-password | POST   | Set a new password              |
+🌱 Plant Records
+Endpoint	Method	Description
+/save-plant-record	POST	Save prediction result
+/view-plant-records	POST	View all plant records
+/delete-plant-record	POST	Delete a record by ID
 
-### 🔁 OTP Handling
+📧 Email & 🔔 Notifications
+Endpoint	Method	Description
+/send-email-reminder	POST	Trigger reminder emails
+/generate-notifications	POST	Generate in-app notifications
+/check-unread-notifications	POST	Check for unread notifications
+/get_user_notifications	GET	Fetch all user notifications
 
-| Endpoint      | Method | Description  |
-| ------------- | ------ | ------------ |
-| /otp-refresh  | POST   | Resend OTP   |
-| /validate-otp | POST   | Validate OTP |
+✨ Roadmap
+ Multi-plant support (e.g. wheat, tomato)
 
-### 🌿 Prediction
+ Admin & role-based access
 
-| Endpoint              | Method | Description                                                          |
-| --------------------- | ------ | -------------------------------------------------------------------- |
-| /predict-green-chilli | POST   | Predict plant growth stage & disease with confidence and suggestions |
+ Analytics dashboard
 
-### 🌱 Plant Records
+ Docker + CI/CD deployment
 
-| Endpoint             | Method | Description            |
-| -------------------- | ------ | ---------------------- |
-| /save-plant-record   | POST   | Save prediction result |
-| /view-plant-records  | POST   | View all plant records |
-| /delete-plant-record | POST   | Delete a record by ID  |
+ Cloud hosting (Render, Vercel, etc.)
 
-### 📧 Email & 🔔 Notifications
+📜 License
+Licensed under the MIT License.
 
-| Endpoint                    | Method | Description                    |
-| --------------------------- | ------ | ------------------------------ |
-| /send-email-reminder        | POST   | Trigger reminder emails        |
-| /generate-notifications     | POST   | Generate in-app notifications  |
-| /check-unread-notifications | POST   | Check for unread notifications |
-| /get\_user\_notifications   | GET    | Fetch all user notifications   |
-
----
-
-## ✨ Roadmap
-
-* [ ] Multi-plant support (e.g. wheat, tomato)
-* [ ] Admin & role-based access
-* [ ] Analytics dashboard
-* [ ] Docker + CI/CD deployment
-* [ ] Cloud hosting (Render, Vercel, etc.)
-
----
-
-## 📜 License
-
-Licensed under the [MIT License](LICENSE).
-
----
-
-## 👨‍💻 Author
-
-**Muhammad Qaiser**
-📧 [qaiserakram7777@gmail.com](mailto:qaiserakram7777@gmail.com)
-🔗 GitHub: [@muhammadqaiser7777](https://github.com/muhammadqaiser7777)
+👨‍💻 Author
+Muhammad Qaiser
+📧 qaiserakram7777@gmail.com
+🔗 GitHub: @muhammadqaiser7777
 
