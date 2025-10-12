@@ -194,9 +194,13 @@ export class PasswordForgetComponent implements OnInit, OnDestroy {
         }, 2000);
       },
       error: (err) => {
-        this.passwordErrorMessage = err?.error?.error === "Temporary token verification failed."
-          ? "Temporary token verification failed."
-          : "Internal server error. Please try again later.";
+        if (err?.error?.error === "Temporary token verification failed.") {
+          this.passwordErrorMessage = "Temporary token verification failed.";
+        } else if (err?.error?.error === "New password cannot be the same as the current password.") {
+          this.passwordErrorMessage = "New password cannot be the same as your current password.";
+        } else {
+          this.passwordErrorMessage = "Internal server error. Please try again later.";
+        }
       }
     });
   }

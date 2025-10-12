@@ -52,7 +52,7 @@
         <div class="plant-info">
             <div class="plant-type">{{ plant.plant_type_name }}</div>
             <div class="plant-class">Stage: {{ plant.class }}</div>
-            <div class="plant-confidence">Confidence: {{ plant.confidence*100 }}%</div>
+            <div class="plant-confidence">Confidence: {{ (plant.confidence*100) | number:'1.2-2' }}%</div>
             <div class="plant-date">Saved On: {{ plant.savedOn }}</div>
         </div>
         <button class="delbtn" (click)="deletePlantRecord(plant.id)">

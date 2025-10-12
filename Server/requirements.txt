@@ -11,3 +11,4 @@ Pillow
 numpy
 opencv-python
 apscheduler
+torchvision

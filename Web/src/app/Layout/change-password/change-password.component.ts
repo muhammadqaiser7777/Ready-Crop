@@ -75,7 +75,7 @@ export class ChangePasswordComponent {
         if (error.status === 401) {
           this.backendError = 'Invalid password';
         } else if (error.status === 400) {
-          this.backendError = error?.error?.message || 'Invalid input';
+          this.backendError = error?.error?.error || 'Invalid input';
         } else {
           this.backendError = 'An unexpected error occurred';
         }

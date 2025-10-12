@@ -25,7 +25,7 @@ export class AgePredictorComponent implements OnInit {
 
   showSavePopup: boolean = false;
   currentIndex: number = 0;
-  validClasses = ['1 month', '2 month', '3 month', '4 month', '5 month'];
+  validClasses = ['1 month', '2 month', '3 months', '4 months', '5 month'];
 
   // Toasts
   toasts: { type: 'success' | 'error' | 'info' | 'warning', message: string }[] = [];
